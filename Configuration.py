@@ -183,9 +183,10 @@ class Conf:
         wS = self.getWorkingSources()
 
         for s in wS[0]: # scorre le sorgenti buone
-            if self.Map[s.getPath()] not in wD[1]: # se la destinazione della sorgente buona non è cattiva
+            dest = self.Map[s.getPath()]
+            if VirtualLocation(dest) not in wD[1]: # se la destinazione della sorgente buona non è cattiva
                                                    # sorgente buona, destinazione buona
-                workingConf.addSource(s, self.Map[s.getPath()]) # aggiungi la nuova sorgente, la dest potrebbe essere
+                workingConf.addSource(s.getPath(), dest) # aggiungi la nuova sorgente, la dest potrebbe essere
                                                               # duplicata ma se la vede da sè
 
         return workingConf
