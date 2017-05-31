@@ -2,6 +2,7 @@
 
 # Classe VirtualLocation definisce un path virtuale che non esiste necessariamente
 # Classe Location DEVE AVERE UN PATH VALIDO
+# Modifica per git
 
 import os
 import datetime

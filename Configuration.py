@@ -9,7 +9,7 @@ from Locations import Location, VirtualLocation
 
 class Conf:
 
-    def __init__(self, Name='', Freq=datetime.timedelta(days=3)):
+    def __init__(self, Name, Freq=datetime.timedelta(days=3)):
         '''
         Classe configurazione:
         NomeConf
@@ -79,6 +79,7 @@ class Conf:
             raise ValueError
         self.Freq = freq
 
+
     def printConf(self):
 
         print 'Configuration ', self.Name
@@ -125,7 +126,9 @@ class Conf:
         return [workDest, badDest]
 
     def genWorkingConf(self):
-
+        '''
+        Genera una nuova configurazione, limitata alle sorgenti e destinazioni esistenti ed accessibili ora
+        '''
         workingConf = Conf(self.Name.join('Working') , self.Freq)
 
         wS = self.getWorkingSources()[0]
@@ -135,5 +138,6 @@ class Conf:
         wD = self.getWorkingDests()[0]
         for d in wD:
             workingConf.addDest(d)
+
 
         return workingConf
