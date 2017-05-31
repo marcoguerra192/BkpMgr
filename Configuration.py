@@ -59,8 +59,8 @@ class Conf:
 
         if not self.Sources: # empty lists are false
             return True
-        for i in self.Sources:
-            if not self.Sources[i].checkRead():
+        for s in self.Sources:
+            if not s.checkRead():
                 return False
         return True
 
@@ -68,8 +68,8 @@ class Conf:
 
         if not self.Dest: # empty lists are false
             return True
-        for i in self.Dest:
-            if not self.Dest[i].checkWrite():
+        for d in self.Dest:
+            if not d.checkWrite():
                 return False
         return True
 
