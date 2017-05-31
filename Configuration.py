@@ -24,6 +24,7 @@ class Conf:
 
         self.Sources = []
         self.Dest = []
+        self.Map = {}
 
         if not isinstance(Freq, datetime.timedelta):
             print 'Conf Error: freq is not a timedelta'
@@ -41,19 +42,64 @@ class Conf:
 
         self.Name = nome
 
-    def addSource(self, path):
+    def sourceAlExists(self, path):
 
-        new = VirtualLocation(path)
+        return VirtualLocation(path) in self.Sources
 
-        self.Sources.append(new)
-        self.allSourcesReadable = self.allSourcesReadable and new.checkRead() # controlla se tutto si può leggere
+    def destAlExists(self, path):
+
+        return VirtualLocation(path) in self.Dest
+
+    def addSource(self, pathS, pathD):
+        ''' Aggiunge man mano le sorgenti. Se la sorgente esiste già è ValueError, se no la aggiunge! Se
+        la destinazione non esiste ancora la crea, quindi linka nella mappa interna source e dest'''
+
+        if self.sourceAlExists(pathS): # se esisteva già è un errore
+            raise ValueError
+
+        newS = VirtualLocation(pathS) # altrimenti va aggiunto
+        self.Sources.append(newS)
+        self.allSourcesReadable = self.allSourcesReadable and newS.checkRead() # controlla se tutto si può leggere
+
+        if not self.destAlExists(pathD): # se non esisteva la dest va aggiunta
+            self.addDest(pathD)
+
+
+        self.Map[pathS] = pathD # mappa la sorgente alla destinazione!
 
     def addDest(self, path):
 
-        new = VirtualLocation(path)
+         new = VirtualLocation(path)
+         self.Dest.append(new)
+         self.allDestWritable = self.allDestWritable and new.checkWrite() # controlla se tutto è scrivibile
 
-        self.Dest.append(new)
-        self.allDestWritable = self.allDestWritable and new.checkWrite() # controlla se tutto è scrivibile
+    def rebind(self, pathS, pathD):
+        '''
+        Modifica Map per cambiare l'associazione di una source ad una dest (può dover eliminare una dest)
+        '''
+        if not self.sourceAlExists(pathS): # se source non esiste è un errore
+            raise ValueError
+
+        if not self.destAlExists(pathD): # se dest non esiste va aggiunta
+            self.addDest(pathD)
+
+        currDest = self.Map[pathS] # salva la attuale destinazione
+        self.Map[pathS] = pathD
+
+        # E' necessario verificare se la destinazione rimossa sia ancora necessaria o se si possa eliminarla
+        self.cleanDests(currDest)
+
+    def cleanDests(self, path):
+        ''' Controlla se, dopo aver rimosso una destinazione, questa sia ancora mappata da qualche sorgente o se
+        invece si possa rimuoverla '''
+        if path not in self.Map:
+            self.removeDest(path)
+
+    def removeDest(self, path):
+        self.Sources.remove(path)
+
+    def removeSource(self, path):
+        self.Dest.remove(path)
 
     def checkAllReadable(self):
 
@@ -127,17 +173,19 @@ class Conf:
 
     def genWorkingConf(self):
         '''
-        Genera una nuova configurazione, limitata alle sorgenti e destinazioni esistenti ed accessibili ora
+        Genera una nuova configurazione, limitata alle sorgenti e destinazioni esistenti ed accessibili ora.
+        QUINDI deve eliminare le dest inagibili e le sorgenti inagibili o associate a destinazioni inagibili
+        E restringere la Mappa di conseguenza. Qui ci starebbe un po' di algoritmo!
         '''
-        workingConf = Conf(self.Name.join('Working') , self.Freq)
+        workingConf = Conf(self.Name.join('-ReducedToWorking') , self.Freq)
 
-        wS = self.getWorkingSources()[0]
-        for s in wS:
-            workingConf.addSource(s)
+        wD = self.getWorkingDests()
+        wS = self.getWorkingSources()
 
-        wD = self.getWorkingDests()[0]
-        for d in wD:
-            workingConf.addDest(d)
-
+        for s in wS[0]: # scorre le sorgenti buone
+            if self.Map[s.getPath()] not in wD[1]: # se la destinazione della sorgente buona non è cattiva
+                                                   # sorgente buona, destinazione buona
+                workingConf.addSource(s, self.Map[s.getPath()]) # aggiungi la nuova sorgente, la dest potrebbe essere
+                                                              # duplicata ma se la vede da sè
 
         return workingConf
