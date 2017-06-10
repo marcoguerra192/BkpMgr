@@ -98,12 +98,16 @@ class Conf:
     def removeDest(self, path):
         '''Bisogna rimuovere sulla base del path, ma non basta fare remove path perchè non è una lista di oggetti
         path bensì di VirtualLocations'''
-        self.Sources.remove(path)
+        for f in self.Dest:
+            if f.getPath() is path:
+                self.Dest.remove(f)
 
     def removeSource(self, path):
         '''Bisogna rimuovere sulla base del path, ma non basta fare remove path perchè non è una lista di oggetti
            path bensì di VirtualLocations'''
-        self.Dest.remove(path)
+        for f in self.Sources:
+            if f.getPath() is path:
+                self.Sources.remove(f)
 
     def checkAllReadable(self):
 
