@@ -18,7 +18,7 @@ class Conf:
         Frequenza
         Varie
         '''
-        if type(Name) is not basestring:
+        if type(Name) is not str:
             raise ValueError
         self.Name = Name
 
@@ -37,18 +37,18 @@ class Conf:
         self.allDestWritable = True
 
     def setName(self, nome):
-        if type(nome) is not basestring:
+        if type(nome) is not str:
             raise ValueError
 
         self.Name = nome
 
     def sourceAlExists(self, path):
 
-        return VirtualLocation(path) in self.Sources
+        return path in [p.getPath() for p in self.Sources]
 
     def destAlExists(self, path):
 
-        return VirtualLocation(path) in self.Dest
+        return path in [p.getPath() for p in self.Dest]
 
     def addSource(self, pathS, pathD):
         ''' Aggiunge man mano le sorgenti. Se la sorgente esiste già è ValueError, se no la aggiunge! Se
@@ -96,9 +96,13 @@ class Conf:
             self.removeDest(path)
 
     def removeDest(self, path):
+        '''Bisogna rimuovere sulla base del path, ma non basta fare remove path perchè non è una lista di oggetti
+        path bensì di VirtualLocations'''
         self.Sources.remove(path)
 
     def removeSource(self, path):
+        '''Bisogna rimuovere sulla base del path, ma non basta fare remove path perchè non è una lista di oggetti
+           path bensì di VirtualLocations'''
         self.Dest.remove(path)
 
     def checkAllReadable(self):
