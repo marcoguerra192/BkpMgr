@@ -63,7 +63,7 @@ class Conf:
 
         if not self.destAlExists(pathD): # se non esisteva la dest va aggiunta
             self.addDest(pathD)
-
+            # controlla se tutto è scrivibile (si occupa lui di controllare allDestWritable)
 
         self.Map[pathS] = pathD # mappa la sorgente alla destinazione!
 
@@ -99,14 +99,14 @@ class Conf:
         '''Bisogna rimuovere sulla base del path, ma non basta fare remove path perchè non è una lista di oggetti
         path bensì di VirtualLocations'''
         for f in self.Dest:
-            if f.getPath() is path:
+            if f.isPath(path) :
                 self.Dest.remove(f)
 
     def removeSource(self, path):
         '''Bisogna rimuovere sulla base del path, ma non basta fare remove path perchè non è una lista di oggetti
            path bensì di VirtualLocations'''
         for f in self.Sources:
-            if f.getPath() is path:
+            if f.isPath(path):
                 self.Sources.remove(f)
 
     def checkAllReadable(self):

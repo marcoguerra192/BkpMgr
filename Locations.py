@@ -14,7 +14,7 @@ class VirtualLocation(object):
 			 da cui copiare e su cui scrivere, controllando l'accessibilità, il mount eccetera
 
 			 Location(Path) deve ricevere un path valido per UNA DIRECTORY
-			 getPath ritorna path
+			 getPath ritorna path assoluto!
 			 getLastSync ritorna l'ultima volta che l'oggetto è stato utilizzato
 			 touchDate(dt = now) riceve un datetime e lo salva come time di ultimo accesso (default now())
 		'''
@@ -44,6 +44,9 @@ class VirtualLocation(object):
 
     def touchDate(self, dt=datetime.datetime.now()):  # record that the obj was updated now
         self.last_sync = dt
+
+    def isPath(self, path):
+        return self.path == os.path.abspath(path)
 
 class Location(VirtualLocation):
 
