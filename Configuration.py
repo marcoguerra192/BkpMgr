@@ -135,10 +135,10 @@ class Conf:
 
 
     def printConf(self):
-
+        print '******* '
         print 'Configuration ', self.Name
-        print 'Sources: ', self.Sources
-        print 'Destinations: ', self.Dest
+        print 'Sources: ', str([p.getPath() for p in self.Sources])
+        print 'Destinations: ', str([p.getPath() for p in self.Dest])
         print 'Frequenza Sync: ', self.Freq
         print 'All Sources Readable' if self.allSourcesReadable else 'SOME SOURCES UNREADABLE'
         print 'All Dests Writable' if self.allDestWritable else 'SOME DESTS NOT WRITABLE'
@@ -185,7 +185,7 @@ class Conf:
         QUINDI deve eliminare le dest inagibili e le sorgenti inagibili o associate a destinazioni inagibili
         E restringere la Mappa di conseguenza. Qui ci starebbe un po' di algoritmo!
         '''
-        workingConf = Conf(self.Name.join('-ReducedToWorking') , self.Freq)
+        workingConf = Conf(self.Name + '-ReducedToWorking' , self.Freq)
 
         wD = self.getWorkingDests()
         wS = self.getWorkingSources()
